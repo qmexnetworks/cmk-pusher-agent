@@ -44,7 +44,7 @@ python C:\Install\cmk-pusher-agent.py install
 - Edit SERVERHOSTNAME in config.ini it should comply with your SSL Certificate
 - Install Service, run cmd as Administrator and run the following command:
 ```
-c:\Install\cmk-pusher-agent\cmk-pusher-agent.exe
+c:\Install\cmk-pusher-agent\cmk-pusher-agent.exe install
 ```
 - Service will push data every 30 seconds
 
