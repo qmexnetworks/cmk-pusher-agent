@@ -16,7 +16,7 @@ Also its possible to use Client based compression.
 - Edit the config.ini (Password needs to be the same on the two sides), configure the Client Name (needs to be exactly the same as the configured Host in Check_MK, dont use special characters or whitespaces)
 - Create a Cron Entry, the Check_MK Agent needs to be executed as root, add the cron.sh to your crontab to run every Minute
 
-##### Installation Windows Agent (more than Beta at the moment) - Option 1 Python Way
+##### Installation Windows Agent (not more than Beta at the moment) - Option 1 Python Way
 - Install the Check_MK Agent (you dont have to install it as service)
 - Install Python 2.7 under Windows (and let it add to the PATH)
 - Open cmd and Install two packets via pip:
@@ -36,7 +36,7 @@ python C:\Install\cmk-pusher-agent.py install
 - Know you can start and edit the service in the services.msc
 - Service will push data every 30 seconds
 
-##### Installation Windows Agent (more than Beta at the moment) - Option 2 EXE Way
+##### Installation Windows Agent (not more than Beta at the moment) - Option 2 EXE Way
 - Install the Check_MK Agent (you dont have to install it as service)
 - Unpack cmk-pusher-agent.zip to eg. C:\Install
 - At the moment, the Config file must be in C:\Install\cmk-agent-pusher\
