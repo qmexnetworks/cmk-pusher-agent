@@ -27,7 +27,7 @@ import sys
 import os
 
 # Config File Path
-cfile = str(os.path.dirname(sys.argv[0]))+"config.ini"
+cfile = str(os.path.dirname(sys.argv[0]))+"/config.ini"
 
 config = ConfigParser.ConfigParser()
 
