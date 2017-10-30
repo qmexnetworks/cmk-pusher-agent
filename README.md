@@ -10,6 +10,10 @@ Also its possible to use Client based compression.
 - You need PHP Support on your Webserver
 - Edit config.inc.php to your needs and create the Spool Directory with the necessary permissions (eg. /opt/cmk-pusher/spool)
 
+##### Installation CheckMK Check
+This check is optional, with this check there is a freshness check possible.
+- Copy the check to yout /usr/share/check_mk/checks directory
+
 ##### Installation Linux Agent
 - You need the Check_MK Agent installed and you need Python 2.7 and PyCurl Support
 - Copy all Files from agent/Linux to a Directory on you Linux Server you want to Monitor (eg. /opt/cmk-pusher)

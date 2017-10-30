@@ -18,6 +18,7 @@
 	include 'config.inc.php';
 	header('Content-type: application/json');
 	$jsondata = implode("", file('php://input'));
+	$clean_data = False;
 	
 	function debug_log($message)
     {
@@ -34,27 +35,47 @@
 		return $client_name;
 	}
 	
-	#debug_log($jsondata);
-	
 	$data = json_decode($jsondata);
-	
-	#debug_log($data);
 	
 	if(trim($data->transaction->action) == "push")
 	{
 		$output = base64_decode($data->transaction->values->agentoutput);
         if(trim($data->transaction->compress))
 		{
-			debug_log($output);
             $output = zlib_decode($output);
 		}
 		
 		$client_name = clean_client($data->transaction->values->client_name);
 		
-		# write data to file
-		$openfile = fopen($spool_path.'/'.$client_name.'.dump','w+');
-		$content = $output;
-		fwrite($openfile, $content);
-        fclose($openfile);
+		# check for md5sum, if not exiting its legacy (old Client)
+		if(!empty($data->transaction->values->md5sum))
+		{
+			if(md5($output) == trim($data->transaction->values->md5sum))
+			{
+				debug_log("Checked MD5 Sum - OK");
+				$clean_data = True;
+			}
+			else{
+				debug_log("Checked MD5 Sum - ERROR");
+				$clean_data = False;
+			}
+		}
+		else{
+			# Set Clean Data for old clients
+			$clean_data = True;
+			debug_log("Checked MD5 Sum - Old Client - ".trim($data->transaction->values->client_name));
+		}
+		
+		if($clean_data)
+		{
+			# write data to file
+			$openfile = fopen($spool_path.'/'.$client_name.'.dump','w+');
+			$content = $output;
+			# Add freshness check to file
+			$content .= "<<<cmk_pusher>>>\n";
+			$content .= "last_connect ".date("Y-m-d H:i:s")."\n";
+			fwrite($openfile, $content);
+			fclose($openfile);
+		}
 	}
 ?>

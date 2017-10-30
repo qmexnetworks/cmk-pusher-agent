@@ -1,0 +1,30 @@
+#!/usr/bin/python
+import datetime
+
+f = '%Y-%m-%d %H:%M:%S'
+cmk_pusher_default_values = (1800, 7200)
+
+def inventory_cmk_pusher(info):
+    for line in info:
+        yield line[0], "cmk_pusher_default_values"
+
+def check_cmk_pusher(item, params, info):
+    warn, crit = params
+    for line in info:
+        lcdate = str(line[1])+" "+str(line[2])
+        datetime_lc = datetime.datetime.strptime(lcdate,f)
+        d1 = datetime.datetime.now()
+        diff = d1 - datetime_lc
+        diff_seconds = int(diff.seconds)
+        if diff_seconds >= crit:
+            return 2, "Last connect %s seconds ago on: %s %s" % (diff_seconds,line[1],line[2])
+        elif diff_seconds >= warn:
+            return 1, "Last connect %s seconds ago on: %s %s" % (diff_seconds,line[1],line[2])
+        else:
+            return 0, "Last connect %s seconds ago on: %s %s" % (diff_seconds,line[1],line[2])
+
+check_info["cmk_pusher"] = {
+    'check_function':            check_cmk_pusher,
+    'inventory_function':        inventory_cmk_pusher,
+    'service_description':       'CMK Pusher',
+}
