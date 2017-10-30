@@ -1,6 +1,6 @@
 # CMK Pusher
-CMK Pusher is a passive push agent extension for Check_MK. At the moment it only supports Linux, but Windows
-Support is planned and was the Reason for this Project.
+CMK Pusher is a passive push agent extension for Check_MK. At the moment it Linux and Windows.
+The Windows Agents connects directly with the Check_MK Agent via localhost. This enables Logile Monitoring in Windows.
 
 It uses a PHP JSON API for Communication. If setup correctly all communication will use HTTPS so all Data is SSL Encrypted.
 Also its possible to use Client based compression.
@@ -37,7 +37,7 @@ python C:\Install\cmk-pusher-agent.py install
 - Service will push data every 30 seconds
 
 ##### Installation Windows Agent (not more than Beta at the moment) - Option 2 EXE Way
-- Install the Check_MK Agent (you dont have to install it as service)
+- Install the Check_MK Agent (you have to install it as service)
 - Unpack cmk-pusher-agent.zip to eg. C:\Install
 - At the moment, the Config file must be in C:\Install\cmk-agent-pusher\
 - Edit the config.ini (Password needs to be the same on the two sides), configure the Client Name (needs to be exactly the same as the configured Host in Check_MK, dont use special characters or whitespaces)
