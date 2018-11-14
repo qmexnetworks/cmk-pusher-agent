@@ -73,7 +73,7 @@
 			$content = $output;
 			# Add freshness check to file
 			$content .= "<<<cmk_pusher>>>\n";
-			$content .= "last_connect ".date("Y-m-d H:i:s")."\n";
+			$content .= "last_connect ".date("Y-m-d H:i:s")." remote_ip ".$_SERVER['REMOTE_ADDR']."\n";
 			fwrite($openfile, $content);
 			fclose($openfile);
 		}

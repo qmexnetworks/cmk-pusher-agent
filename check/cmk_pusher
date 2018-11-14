@@ -22,11 +22,11 @@ def check_cmk_pusher(item, params, info):
         lcdate = str(line[1])+" "+str(line[2])
         diff_seconds = datetime_sec_diff(lcdate)
         if diff_seconds >= crit:
-            return 2, "Last connect %s seconds ago on: %s %s" % (diff_seconds,line[1],line[2])
+            return 2, "Last connect %s seconds ago on: %s %s from: %s" % (diff_seconds,line[1],line[2],line[4])
         elif diff_seconds >= warn:
-            return 1, "Last connect %s seconds ago on: %s %s" % (diff_seconds,line[1],line[2])
+            return 1, "Last connect %s seconds ago on: %s %s from: %s" % (diff_seconds,line[1],line[2],line[4])
         else:
-            return 0, "Last connect %s seconds ago on: %s %s" % (diff_seconds,line[1],line[2])
+            return 0, "Last connect %s seconds ago on: %s %s from: %s" % (diff_seconds,line[1],line[2],line[4])
 
 check_info["cmk_pusher"] = {
     'check_function':            check_cmk_pusher,
