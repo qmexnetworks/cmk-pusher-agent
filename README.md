@@ -15,7 +15,7 @@ This check is optional, with this check there is a freshness check possible.
 - Copy the check to yout /usr/share/check_mk/checks directory
 
 ##### Installation Linux Agent
-- You need the Check_MK Agent installed and you need Python 2.7 and PyCurl Support
+- You need the Check_MK Agent installed and you need Python 3 and the requests module (`apt install python3-requests` or `pip install requests`)
 - Copy all Files from agent/Linux to a Directory on you Linux Server you want to Monitor (eg. /opt/cmk-pusher)
 - Edit the config.ini (Password needs to be the same on the two sides), configure the Client Name (needs to be exactly the same as the configured Host in Check_MK, dont use special characters or whitespaces)
 - Create a Cron Entry, the Check_MK Agent needs to be executed as root, add the cron.sh to your crontab to run every Minute

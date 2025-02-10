@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/env python3
 # This file is part of CMK Pusher.
 # Copyright by Markus Plischke and Q-MEX Networks.  All rights reserved.
 #
@@ -14,22 +14,20 @@
 # CMK Pusher is a passive push service for Check_MK
 #
 # @author Markus Plischke <m.plischke@q-mex.net>
-# @company Q-MEX Networks http://www.q-mex.net
+# @company Q-MEX Networks https://www.q-mex.net
 
-import pycurl
-import subprocess
-import ConfigParser
+from subprocess import PIPE, Popen
+from configparser import ConfigParser
 import zlib
 import base64
-import json
-import StringIO
 import sys
 import os
+import requests
 
 # Config File Path
 cfile = str(os.path.dirname(sys.argv[0]))+"/config.ini"
 
-config = ConfigParser.ConfigParser()
+config = ConfigParser()
 
 def ConfigSectionMap(section):
     dict1 = {}
@@ -38,7 +36,7 @@ def ConfigSectionMap(section):
         try:
             dict1[option] = config.get(section, option)
             if dict1[option] == -1:
-                DebugPrint("skip: %s" % option)
+                print("skip: %s" % option)
         except:
             print("exception on %s!" % option)
             dict1[option] = None
@@ -51,50 +49,33 @@ def json_client(action,data):
     d['transaction'] = {}
     if action == "push":
         d['transaction']['action'] = "push"
-        d['transaction']['compress'] = ConfigSectionMap("server")['compress']
+        d['transaction']['compress'] = ConfigSectionMap("server")['compress'] == 'True'
         d['transaction']['values'] = data['values']
-    jsonarray = json.dumps(d)
-    curl = pycurl.Curl()
+
     srvurl = "https://"+ConfigSectionMap("server")['host']+"/api/json.php"
-    curl.setopt(pycurl.URL, srvurl)
-    curl.setopt(pycurl.FOLLOWLOCATION, 1)
-    contents = StringIO.StringIO()
-    curl.setopt(pycurl.WRITEFUNCTION, contents.write)
-    curl.setopt(pycurl.VERBOSE, 0)
-    curl.setopt(pycurl.POST, 0)
-    curl.setopt(pycurl.POSTFIELDS, jsonarray)
-    curl.setopt(pycurl.SSL_VERIFYPEER, 0)
-    iserror = False
-    try:
-        curl.perform()
-    except:
-        print "Could not connect to server " + ConfigSectionMap("server")['host']+"\n"
-        iserror = True
-    if not iserror:
-        curl.close()
-        message = contents.getvalue()
-        try:
-            array = json.loads(message)
-        except:
-            array = {}
-            array['status'] = "error"
-            array['message'] = message
-        return array
-    else:
-        return 0
+
+    resp = requests.post(srvurl, json=d)
+    if resp.status_code >= 400:
+        print("Error sending data to Check_MK Server")
+        print(resp.text)
+        sys.exit(1)
 
 try:
     config.read(cfile)
 except:
-    print "config.ini not existing"
+    print("config.ini does not exist")
     sys.exit(1)
 
 command = ConfigSectionMap("check_mk")['path']
-process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE).stdout
+process = Popen(command, shell=True, stdout=PIPE).stdout
+if process is None:
+    print("Process returned no output")
+    sys.exit(1)
+
 output = process.read()
 
 
-if ConfigSectionMap("server")['compress']:
+if ConfigSectionMap("server")['compress'] == 'True':
     output = base64.b64encode(zlib.compress(output,9))
 else:
     output = base64.b64encode(output)
@@ -102,6 +83,6 @@ else:
 data = {}
 data['values'] = {}
 data['values']['client_name'] = ConfigSectionMap("check_mk")['client_name']
-data['values']['agentoutput'] = output
+data['values']['agentoutput'] = output.decode()  # To convert byte-string to string
 
 json_client("push",data)
